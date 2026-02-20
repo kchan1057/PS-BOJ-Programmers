@@ -43,18 +43,6 @@ int main() {
             }
         }
     }
-    fill(dist1, dist1+805, INF);
-    pq.push({0, dot2}); dist1[dot2] = 0;
-    while(!pq.empty()) {
-        auto cur = pq.top(); pq.pop();
-        if(dist1[cur.Y] < cur.X) continue;
-        for(auto nxt : adj[cur.Y]){
-            if(dist1[cur.Y] + nxt.X < dist1[nxt.Y]) {
-                dist1[nxt.Y] = dist1[cur.Y] + nxt.X;
-                pq.push({dist1[nxt.Y], nxt.Y});
-            }
-        }
-    }
     fill(dist2, dist2+805, INF);
     pq.push({0, 1}); dist2[1] = 0;
     while(!pq.empty()) {
