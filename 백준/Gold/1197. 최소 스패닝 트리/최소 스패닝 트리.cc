@@ -3,34 +3,32 @@
 #define Y second
 using namespace std;
 
-bool chk[10005];
+
 vector<pair<int, int>> adj[10005];
-int v, e; 
-int main(void){
+bool chk[10005];
+int main() {
     ios::sync_with_stdio(0);
-    cin.tie(0); cout.tie(0);
-    cin >> v >> e;
-    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq;
+    cin.tie(0);
+    int v, e; cin >> v >> e;
     for(int i = 0; i < e; i++){
         int a, b, cost; cin >> a >> b >> cost;
         adj[a].push_back({cost, b});
-        adj[b].push_back({cost, a}); // a 정점 c 가격 b 정점
+        adj[b].push_back({cost, a});
     }
-    int cnt = 0;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     chk[1] = 1;
-    for(auto nxt : adj[1]) pq.push({nxt.X, 1, nxt.Y});
-    long long total_cost = 0;
+    for(auto nxt : adj[1]) pq.push({nxt.X, nxt.Y});
+    int cnt = 0, ans = 0;
     while(cnt < v-1){
-        int cost, a, b;
-        tie(cost, a, b) = pq.top(); pq.pop();
-        if(chk[b]) continue;
-        total_cost += cost;
-        cnt++;
-        chk[b] = 1;
-        for(auto nxt : adj[b]) {
-            if(!chk[nxt.Y]) pq.push({nxt.X, b, nxt.Y});
+        auto cur = pq.top(); pq.pop();
+        if(chk[cur.Y]) continue;
+        for(auto nxt : adj[cur.Y]){
+            if(!chk[nxt.Y]) pq.push({nxt.X, nxt.Y});
         }
+        ans += cur.X;
+        chk[cur.Y] = 1;
+        cnt++;
     }
-    cout << total_cost << '\n';
+    cout << ans << '\n';
     return 0;
 }
