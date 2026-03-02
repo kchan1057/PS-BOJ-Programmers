@@ -1,39 +1,36 @@
 #include <bits/stdc++.h>
 using namespace std;
-int dist[1000002];
-int main(void)
-{
+
+int arr[1000005];
+int main() {
     ios::sync_with_stdio(0);
-    cin.tie(0);
-    fill(dist, dist+1000001, -1);
-    int n; cin >> n; 
-    dist[n] = 0;
-    queue<int> q; q.push(n);
-    while(dist[1] == -1)
-    {
-        auto cur = q.front(); q.pop();
-        if(cur % 3 == 0)
-        {
-            auto nxt = cur/3;
-            if(dist[nxt] == -1){
-                q.push(nxt);
-                dist[nxt] = dist[cur] + 1;
-            }
-        }
-        if(cur % 2 == 0)
-        {
-            auto nxt = cur / 2;
-            if(dist[nxt] == -1){
-                q.push(nxt);
-                dist[nxt] = dist[cur] + 1;
-            }
-        }
-        auto nxt = cur - 1;
-        if(dist[nxt] == -1){
-                q.push(nxt);
-                dist[nxt] = dist[cur] + 1;
-            } 
+    cin.tie(0); cout.tie(0);
+    int n; cin >> n;
+    if(n == 1){
+        cout << 0;
+        return 0;
     }
-    cout << dist[1] << '\n';
-    return 0;
+    memset(arr, -1, sizeof(arr));
+    arr[n] = 0; 
+    queue<int> Q; Q.push(n);
+    while(!Q.empty()){
+        auto cur = Q.front(); Q.pop();
+        if(cur % 3 == 0 && arr[cur/3] == -1){
+            arr[cur/3] = arr[cur]+1;
+            if(cur/3 == 1) break;
+            Q.push(cur/3);
+        }
+        if(cur % 2 == 0 && arr[cur/2] == -1){
+            arr[cur/2] = arr[cur]+1;
+            if(cur/2 == 1) break;
+            Q.push(cur/2); 
+        }
+        if(cur-1 >= 1 && arr[cur-1] == -1){
+            arr[cur-1] = arr[cur]+1;
+            if(cur-1 == 1) break;
+            Q.push(cur-1);
+        }
+    }
+    cout << arr[1];
+    return 0;   
 }
