@@ -1,29 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
-int d[2][4];
-int s[100005][4];
+
+int max_d[2][4], min_d[2][4];
+
 int main(){
     ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
+    cin.tie(0);
+
     int n; cin >> n;
-    for(int i = 1; i <= n; i++){
-        for(int j = 1; j <= 3; j++) cin >> s[i][j];
-    }
-    d[1][1] = s[1][1]; d[1][2] = s[1][2]; d[1][3] = s[1][3];
+    
+    // 첫 번째 줄 입력 처리
+    int a, b, c;
+    cin >> a >> b >> c;
+    max_d[1][1] = min_d[1][1] = a;
+    max_d[1][2] = min_d[1][2] = b;
+    max_d[1][3] = min_d[1][3] = c;
+
     for(int i = 2; i <= n; i++){
-        d[i%2][1] = max(d[(i-1)%2][1] + s[i][1], d[(i-1)%2][2] + s[i][1]);
-        d[i%2][2] = max({d[(i-1)%2][1] + s[i][2], d[(i-1)%2][2] + s[i][2], d[(i-1)%2][3] + s[i][2]});
-        d[i%2][3] = max(d[(i-1)%2][2] + s[i][3], d[(i-1)%2][3] + s[i][3]);
+        cin >> a >> b >> c; // 매번 한 줄씩만 입력받음
+        int cur = i % 2;
+        int prev = (i - 1) % 2;
+
+        // 최대값 갱신
+        max_d[cur][1] = max(max_d[prev][1], max_d[prev][2]) + a;
+        max_d[cur][2] = max({max_d[prev][1], max_d[prev][2], max_d[prev][3]}) + b;
+        max_d[cur][3] = max(max_d[prev][2], max_d[prev][3]) + c;
+
+        // 최소값 갱신
+        min_d[cur][1] = min(min_d[prev][1], min_d[prev][2]) + a;
+        min_d[cur][2] = min({min_d[prev][1], min_d[prev][2], min_d[prev][3]}) + b;
+        min_d[cur][3] = min(min_d[prev][2], min_d[prev][3]) + c;
     }
-    int ansMax = max({d[n%2][1], d[n%2][2], d[n%2][3]});
-    memset(d, 0, sizeof(d));
-    d[1][1] = s[1][1]; d[1][2] = s[1][2]; d[1][3] = s[1][3];
-    for(int i = 2; i <= n; i++){
-        d[i%2][1] = min(d[(i-1)%2][1] + s[i][1], d[(i-1)%2][2] + s[i][1]);
-        d[i%2][2] = min({d[(i-1)%2][1] + s[i][2], d[(i-1)%2][2] + s[i][2], d[(i-1)%2][3] + s[i][2]});
-        d[i%2][3] = min(d[(i-1)%2][2] + s[i][3], d[(i-1)%2][3] + s[i][3]);
-    }
-    int ansMin = min({d[n%2][1], d[n%2][2], d[n%2][3]});
-    cout << ansMax << " " << ansMin;
+
+    int last = n % 2;
+    if (n == 1) last = 1; // n이 1일 때 예외 처리
+
+    cout << max({max_d[last][1], max_d[last][2], max_d[last][3]}) << " "
+         << min({min_d[last][1], min_d[last][2], min_d[last][3]});
+
     return 0;
 }
