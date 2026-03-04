@@ -1,31 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-int t, n, m;
-int coin[22];
-int d[22][10002];
-
-int main(void) {
-  ios::sync_with_stdio(0);
-  cin.tie(0);
-
-  cin >> t;
-  while(t--){
-    cin >> n;
-    for(int i = 0; i < n; i++){
-      cin >> coin[i];
-      d[i][0] = 1;
+int main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int t,n,m; cin >> t;
+    int coin[21];
+    long long dp[10001] = {0,};
+    while(t--){
+        cin >> n;
+        for(int i = 1 ; i < n+1; i++) cin >> coin[i];
+        cin >> m; dp[0] = 1;
+        for(int i = 1; i < n+1; i++){
+            for(int j = coin[i]; j < m+1; j++) dp[j] += dp[j-coin[i]];
+        }
+        cout << dp[m] << '\n';
+        memset(dp, 0 ,sizeof(dp));
     }
-    cin >> m;
-    for(int i = 0; i < n; i++){
-      for(int j = 1; j <= m; j++){
-        d[i][j] = 0;
-        if(i-1 >= 0)
-          d[i][j] += d[i-1][j];
-        if(j-coin[i] >= 0)
-          d[i][j] += d[i][j-coin[i]];
-      }
-    }
-    cout << d[n-1][m] << '\n';
-  }
+    return 0;
 }
