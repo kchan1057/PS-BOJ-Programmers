@@ -2,54 +2,65 @@
 #define X first
 #define Y second
 using namespace std;
-bool chk1[1005];
-bool chk2[1005];
-vector<pair<int, int>> adj[1005];
-int main(void){
+vector<pair<int, int>> adj[1005]; // 범위를 1005 정도로 넉넉히
+bool chk[1005];
+
+int main() {
     ios::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
     int n, m; cin >> n >> m;
-    priority_queue<tuple<int, int, int>> pq_max;
-    priority_queue<tuple<int, int,int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq_min;
-    int cnt = 0, max_ans = 0, min_ans = 0;
-    for(int i = 0; i < m+1; i++){
-        int a, b, cost; cin >> a >> b >> cost;
-        adj[a].push_back({cost, b});
-        adj[b].push_back({cost, a});
+    
+    // 입력을 m+1번 받음 (문제 조건에 따라)
+    for(int i = 0; i < m + 1; i++){
+        int a, b, c; cin >> a >> b >> c;
+        adj[a].push_back({c, b});
+        adj[b].push_back({c, a});
     }
-    for(auto nxt : adj[0]){
-        pq_max.push({nxt.X, 0, nxt.Y});
-        pq_min.push({nxt.X, 0, nxt.Y});
-    }
-    chk1[0] = 1, chk2[0] = 1;
-    int max_total = 0, min_total = 0;
-    while(cnt < n){
-        int cost1, a1, b1;
-        tie(cost1, a1, b1) = pq_max.top(); pq_max.pop();
-        if(chk1[b1]) continue;
-        chk1[b1] = 1;
+
+    int max_ans = 0, min_ans = 0, cnt = 0;
+    
+    // 1. 오르막길(0)을 최대한 많이 선택하는 경우 (pq_min 사용)
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq_min;
+    
+    chk[0] = 1; // 시작점 방문 처리
+    for(auto nxt : adj[0]) pq_min.push({nxt.X, nxt.Y});
+
+    while(!pq_min.empty()){
+        auto cur = pq_min.top(); pq_min.pop();
+        if(chk[cur.Y]) continue; // ★ 필수: 이미 방문했다면 건너뛰기
+        
+        chk[cur.Y] = 1;
         cnt++;
-        if(cost1 == 0) {
-            max_ans++;
+        if(cur.X == 0) max_ans++; // 오르막길 개수 카운트
+        
+        for(auto nxt : adj[cur.Y]){
+            if(!chk[nxt.Y]) pq_min.push({nxt.X, nxt.Y});
         }
-        for(auto nxt : adj[b1]) {
-            if(!chk1[nxt.Y]) pq_max.push({nxt.X, b1, nxt.Y});
-        }
+        if(cnt == n) break;
     }
+
+    // 2. 오르막길(0)을 최소한으로 선택하는 경우 (pq_max 사용)
+    memset(chk, 0, sizeof(chk)); 
     cnt = 0;
-    while(cnt < n){
-        int cost2, a2, b2;
-        tie(cost2, a2, b2) = pq_min.top(); pq_min.pop();
-        if(chk2[b2]) continue;
-        chk2[b2] = 1;
+    priority_queue<pair<int, int>> pq_max;
+    
+    chk[0] = 1; // 시작점 재설정
+    for(auto nxt : adj[0]) pq_max.push({nxt.X, nxt.Y});
+
+    while(!pq_max.empty()){
+        auto cur = pq_max.top(); pq_max.pop();
+        if(chk[cur.Y]) continue; // ★ 필수: 이미 방문했다면 건너뛰기
+        
+        chk[cur.Y] = 1;
         cnt++;
-        if(cost2 == 0) {
-            min_ans++;
+        if(cur.X == 0) min_ans++; // 오르막길 개수 카운트
+        
+        for(auto nxt : adj[cur.Y]){
+            if(!chk[nxt.Y]) pq_max.push({nxt.X, nxt.Y});
         }
-        for(auto nxt : adj[b2]) {
-            if(!chk2[nxt.Y]) pq_min.push({nxt.X, b2, nxt.Y});
-        }
+        if(cnt == n) break;
     }
-    cout << min_ans*min_ans - max_ans*max_ans << '\n';
+
+    cout << (long long)max_ans*max_ans - (long long)min_ans*min_ans << '\n';
     return 0;
 }
