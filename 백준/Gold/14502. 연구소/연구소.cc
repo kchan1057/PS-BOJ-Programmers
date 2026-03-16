@@ -1,51 +1,68 @@
 #include <bits/stdc++.h>
-#define X first
-#define Y second
 using namespace std;
-int board[9][9];
-int cpyBoard[9][9];
-vector<int> ans;
-int dx[4] = {1, 0, -1, 0};
-int dy[4] = {0, 1, 0, -1}; 
-int main(){
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    int n, m; cin >> n >> m;
-    queue<pair<int, int>> Q;
-    for(int i = 0; i < n ; i++){
-        for(int j = 0 ; j < m; j++) cin >> board[i][j];
-    }
-    for(int i = 0; i < n*m; i++){
-        for(int j = i+1; j < n*m; j++){
-            for(int k = j+1; k < n*m; k++){
-                for(int t = 0; t < n; t++){
-                    for(int s = 0; s < m; s++) {
-                        cpyBoard[t][s] = board[t][s];
-                        if(board[t][s] == 2) Q.push({t, s});
-                    }
-                }
-                if(cpyBoard[i/m][i%m] == 0 && cpyBoard[j/m][j%m] == 0 && cpyBoard[k/m][k%m] == 0) cpyBoard[i/m][i%m] = 1, cpyBoard[j/m][j%m] = 1, cpyBoard[k/m][k%m] = 1;
-                while(!Q.empty()){
-                    auto cur = Q.front(); Q.pop();
-                    for(int dir = 0; dir < 4; dir++){
-                        int nx = dx[dir] + cur.X;
-                        int ny = dy[dir] + cur.Y;
-                        if(nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
-                        if(cpyBoard[nx][ny] == 1 || cpyBoard[nx][ny] == 2) continue;
-                        Q.push({nx, ny});
-                        cpyBoard[nx][ny] = 2;
-                    }
-                }
-                int maxArea = 0;
-                for(int t = 0; t < n; t++){
-                    for(int s = 0; s < m; s++){
-                        if(cpyBoard[t][s] == 0) maxArea++;
-                    }
-                }
-                ans.push_back(maxArea);
+
+int n, m, result = 0;
+int board[9][9], temp[9][9];
+int dx[] = {-1, 1, 0, 0}, dy[] = {0, 0, -1, 1};
+
+// 바이러스 퍼뜨리기 (BFS)
+void spreadVirus() {
+    int afterSpread[9][9];
+    memcpy(afterSpread, temp, sizeof(temp));
+    queue<pair<int, int>> q;
+
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            if (afterSpread[i][j] == 2) q.push({i, j});
+
+    while (!q.empty()) {
+        auto [x, y] = q.front(); q.pop();
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i], ny = y + dy[i];
+            if (nx >= 0 && nx < n && ny >= 0 && ny < m && afterSpread[nx][ny] == 0) {
+                afterSpread[nx][ny] = 2;
+                q.push({nx, ny});
             }
         }
     }
-    cout << *max_element(ans.begin(), ans.end());
+
+    // 안전 영역 계산
+    int cnt = 0;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            if (afterSpread[i][j] == 0) cnt++;
+    
+    result = max(result, cnt);
+}
+
+// 벽 세우기 (DFS)
+void setWall(int count) {
+    if (count == 3) {
+        spreadVirus();
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (temp[i][j] == 0) {
+                temp[i][j] = 1; // 벽 세우기
+                setWall(count + 1);
+                temp[i][j] = 0; // 되돌리기 (백트래킹)
+            }
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(0); cin.tie(0);
+    cin >> n >> m;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++) cin >> board[i][j];
+
+    // 원본 보드를 보존하며 탐색
+    memcpy(temp, board, sizeof(board));
+    setWall(0);
+
+    cout << result;
     return 0;
-}  
+}
