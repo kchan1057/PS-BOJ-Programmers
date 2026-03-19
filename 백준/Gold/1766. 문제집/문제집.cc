@@ -1,9 +1,10 @@
 #include <bits/stdc++.h>
+#define X first
+#define Y second
 using namespace std;
-vector<int> adj[100005];
-int dig[100005];
-vector<int> result;
-bool vis[100005];
+vector<int> adj[32005];
+int dig[32005];
+vector<int> ans;
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
@@ -17,18 +18,14 @@ int main() {
     for(int i = 1; i <= n; i++){
         if(dig[i] == 0) Q.push(i);
     }
-
-    while(!Q.empty()){
-        int cur = Q.top(); Q.pop();
-        if(!vis[cur]) result.push_back(cur);
-        vis[cur] = 1;
-        for(int nxt : adj[cur]){
+    while(!Q.empty()) {
+        auto cur = Q.top(); Q.pop();
+        ans.push_back(cur);
+        for(auto nxt : adj[cur]){
             dig[nxt]--;
-            if(dig[nxt] == 0){
-                Q.push(nxt);
-            }
+            if(dig[nxt] == 0) Q.push(nxt);
         }
     }
-    for(int nxt : result) cout << nxt << " ";
-    return 0;   
+    for(auto cur : ans) cout << cur << " ";
+    return 0;
 }
