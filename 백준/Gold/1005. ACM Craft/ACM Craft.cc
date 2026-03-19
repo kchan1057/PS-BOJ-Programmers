@@ -2,52 +2,41 @@
 #define X first
 #define Y second
 using namespace std;
-int s[1002];
-int dig[1002];
-bool vis[1002];
-int dp[1002];
-vector<int> adj[1002];
-int main(){
-    ios::sync_with_stdio(false);
+int buildTime[1005];
+int dp[1005];
+vector<int> adj[1005];
+int dig[1005];
+int main() {
+    ios::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
     int T; cin >> T;
-    while(T--){
-        memset(s, 0, sizeof(s));
-        memset(dp, 0, sizeof(s));
-        memset(dig, 0, sizeof(dig));
-        memset(vis, 0, sizeof(vis));
-        memset(adj, 0, sizeof(adj));
-
+    while(T--) {
         int n, k; cin >> n >> k;
-        for(int i = 1; i <= n; i++) cin >> s[i];
+        for(int i = 1; i <= n; i++) adj[i].clear();
+        memset(buildTime, 0, sizeof(buildTime));
+        memset(dig, 0, sizeof(dig));
+        for(int i = 1; i <= n; i++) cin >> buildTime[i];
         for(int i = 0; i < k; i++){
-            int a, b; cin >> a >> b;
-            adj[a].push_back(b);
-            dig[b]++;
+            int x, y; cin >> x >> y;
+            adj[x].push_back(y);
+            dig[y]++;
         }
-        int aim; cin >> aim;
-
-        priority_queue<int> Q;
+        int w; cin >> w;    
+        queue<int> Q;
         for(int i = 1; i <= n; i++){
-            if(dig[i] == 0) {
-                Q.push(i);
-                vis[i] = 1;
-                dp[i] = s[i];
-            }
+            if(dig[i] == 0) Q.push(i);
+            dp[i] = buildTime[i];
         }
         while(!Q.empty()){
-            auto cur = Q.top(); Q.pop();
-            for(auto nxt : adj[cur]) {
-                if(vis[nxt]) continue;
+            auto cur = Q.front(); Q.pop();
+            for(auto nxt : adj[cur]){
                 dig[nxt]--;
-                if(dig[nxt] == 0) {
-                    vis[nxt] = 1;
-                    Q.push(nxt);
-                }
-                dp[nxt] = max(dp[nxt], dp[cur] + s[nxt]);
+                if(dig[nxt] == 0) Q.push(nxt);
+                dp[nxt] = max(dp[nxt], dp[cur]+buildTime[nxt]);
+        
             }
         }
-        cout << dp[aim] << '\n';
+        cout << dp[w] << '\n';
     }
     return 0;
-}  
+}
