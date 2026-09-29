@@ -1,22 +1,25 @@
 #include <string>
 #include <vector>
-
 using namespace std;
-
-int m;
-int len;
+int ans = 0;
 bool isused[9];
-void dfs(int k, int t, vector<vector<int>> dungeons){
+void dfs(int a, int k, int b, vector<vector<int>>& dungeons){
+    ans = max(ans, b);
+    if(a == dungeons.size()){
+        return;
+    }
+    
     for(int i = 0; i < dungeons.size(); i++){
-        if(!isused[i] && k >= dungeons[i][0]){
-            isused[i] = 1;
-            dfs(k-dungeons[i][1], t+1, dungeons);
-            isused[i] = 0;
-        }
-        if(t > m) m = t;
+        if(isused[i]) continue;
+        if(k < dungeons[i][0] || k - dungeons[i][1] < 0) continue;
+        isused[i] = 1;
+        k -= dungeons[i][1];
+        dfs(a+1, k, b+1 , dungeons);
+        k += dungeons[i][1];
+        isused[i] = 0;
     }
 }
 int solution(int k, vector<vector<int>> dungeons) {
-    dfs(k, 0, dungeons);
-    return m;
+    dfs(0, k, 0, dungeons);
+    return ans;
 }
