@@ -1,33 +1,41 @@
-#include <string>
 #include <vector>
-#include <algorithm>
-#include <queue>
 using namespace std;
-vector<int> ans;
-vector<int> solution(vector<int> s, int k) {
-    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq;
-    int st = 0, en = 1;
-    int sum = s[st] + s[en];
-    auto it = find(s.begin(), s.end(), k);
-    if(it != s.end()){
-        int idx= it - s.begin();
-        return {idx, idx};
+
+vector<int> solution(vector<int> sequence, int k) {
+    int left = 0;
+    int right = 0;
+    long long sum = sequence[0];
+
+    int bestLeft = 0;
+    int bestRight = sequence.size() - 1;
+
+    while (left <= right && right < sequence.size()) {
+
+        if (sum == k) {
+            // 더 짧은 구간이면 갱신
+            if (right - left < bestRight - bestLeft) {
+                bestLeft = left;
+                bestRight = right;
+            }
+
+            // 더 짧은 구간이 있는지 보기 위해 왼쪽을 줄여봄
+            sum -= sequence[left];
+            left++;
+        }
+
+        else if (sum < k) {
+            right++;
+
+            if (right < sequence.size()) {
+                sum += sequence[right];
+            }
+        }
+
+        else { // sum > k
+            sum -= sequence[left];
+            left++;
+        }
     }
-    while(en < s.size()) {
-        if(sum < k) {
-            en++;
-            if(en < s.size()) sum += s[en];
-        }
-        else if(sum > k) {
-            sum -= s[st];
-            st++;
-        }
-        else {
-            pq.push({en-st, st, en});
-            sum -= s[st];
-            st++;
-        }
-    }
-    auto [a, b, c] = pq.top(); pq.pop();
-    return {b, c};
+
+    return {bestLeft, bestRight};
 }
