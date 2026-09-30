@@ -16,6 +16,6 @@ int solution(vector<vector<int>> triangle) {
         }
     }
     
-    int ans = *max_element(d[len-1], d[len-1] + len-1);
+    int ans = *max_element(d[len-1], d[len-1] + len);
     return ans;
 }
