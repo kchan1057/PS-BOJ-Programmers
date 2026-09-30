@@ -10,9 +10,8 @@ vector<int> solution(vector<int> s, int k) {
     int sum = s[st] + s[en];
     auto it = find(s.begin(), s.end(), k);
     if(it != s.end()){
-        ans.push_back(it - s.begin());
-        ans.push_back(it - s.begin());
-        return ans;
+        int idx= it - s.begin();
+        return {idx, idx};
     }
     while(en < s.size()) {
         if(sum < k) {
@@ -29,8 +28,6 @@ vector<int> solution(vector<int> s, int k) {
             st++;
         }
     }
-    int a, b, c;
-    tie(a, b, c) = pq.top(); pq.pop();
-    ans.push_back(b); ans.push_back(c);
-    return ans;
+    auto [a, b, c] = pq.top(); pq.pop();
+    return {b, c};
 }
