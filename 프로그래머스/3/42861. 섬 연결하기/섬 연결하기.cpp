@@ -4,31 +4,28 @@
 #define X first
 #define Y second
 using namespace std;
-vector<pair<int, int>> adj[102];
-bool chk[102];
+bool vis[102];
+vector<pair<int, int >> adj[102];
 int solution(int n, vector<vector<int>> costs) {
-    int ans = 0, cnt = 0;
-    int v = n;
-    
     for(int i = 0; i < costs.size(); i++){
         adj[costs[i][0]].push_back({costs[i][2], costs[i][1]});
         adj[costs[i][1]].push_back({costs[i][2], costs[i][0]});
     }
-    
-    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq;
-    for(auto nxt : adj[0]) pq.push({nxt.X, 0, nxt.Y});
-    chk[0] = 1;
-    while(!pq.empty()) {
-        int cost, a, b;
-        tie(cost, a, b) = pq.top(); pq.pop();
-        if(chk[b]) continue;
-        ans += cost;
-        chk[b] = 1;
+    int cnt = 0, ans = 0;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    for(auto cur : adj[0]){
+        pq.push({cur.X, cur.Y});
+    }
+    vis[0] = 1;
+    while(cnt < n - 1){
+        auto cur = pq.top(); pq.pop();
+        if(vis[cur.Y]) continue;
+        vis[cur.Y] = 1;
+        ans += cur.X;
         cnt++;
-        
-        for(auto nxt : adj[b]) {
-            if(!chk[nxt.Y])
-            pq.push({nxt.X, b, nxt.Y});
+        for(auto nxt : adj[cur.Y]){
+            if(vis[nxt.Y]) continue;
+            pq.push({nxt.X, nxt.Y});
         }
     }
     return ans;
